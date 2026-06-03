@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Payment – Order #{{ order.id }} – ShopEase{% endblock %}
+{% block content %}
+<h2 class="mb-2">Payment for Order #{{ order.id }}</h2>
+
+<div class="auth-box">
+    <h3>Amount: ₹{{ "%.2f"|format(order.total_amount) }}</h3>
+    <form method="POST" class="mt-2">
+        <div class="form-group">
+            <label for="payment_method">Payment Method</label>
+            <select id="payment_method" name="payment_method" required>
+                <option value="">Select method...</option>
+                <option value="upi">UPI</option>
+                <option value="card">Credit/Debit Card</option>
+                <option value="cod">Cash on Delivery</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success btn-block">Pay Now</button>
+    </form>
+    <p class="text-center mt-1" style="font-size:0.8rem; color:#6b7280;">
+        This is a simulated payment. All transactions are marked as successful.
+    </p>
+</div>
+{% endblock %}

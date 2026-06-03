@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Seller Profile & Verification – ShopEase{% endblock %}
+{% block content %}
+<div class="flex-between mb-2">
+    <h2>Seller Verification & Profile</h2>
+    <div style="display: flex; align-items: center;">
+        {% if profile.verification_status == 'Verified' %}
+        <span class="status status-success" style="padding: 10px 20px; font-size: 1rem; border-radius: 8px; background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700;">
+            <i class="fa-solid fa-circle-check"></i> Verification Status: Verified
+        </span>
+        {% else %}
+        <span class="status status-warning" style="padding: 10px 20px; font-size: 1rem; border-radius: 8px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-weight: 700;">
+            <i class="fa-solid fa-clock"></i> Verification Status: Pending
+        </span>
+        {% endif %}
+    </div>
+</div>
+
+<p style="color: #94a3b8; margin-bottom: 24px;">Please complete your seller profile. Your details must be verified by our team before you can start receiving payouts.</p>
+
+<form method="POST" action="{{ url_for('supplier.account') }}" class="account-dashboard">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; margin-bottom: 32px;">
+        
+        <!-- Identity Details -->
+        <div class="card" style="padding: 32px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom: 20px; color: #f8fafc; border-bottom: 1px solid #334155; padding-bottom: 10px;">
+                <i class="fa-solid fa-id-card" style="color: #3b82f6;"></i> Identity Details
+            </h3>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label style="color: #94a3b8; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: block;">PAN Number <span style="color: #ef4444;">*</span></label>
+                <input type="text" name="pan_number" value="{{ profile.pan_number or '' }}" placeholder="ABCDE1234F" required style="width: 100%; padding: 14px 16px; border-radius: 10px; font-size: 0.95rem; border: 1px solid #334155; background: #0f172a; color: #f8fafc; text-transform: uppercase;">
+            </div>
+        </div>
+
+        <!-- Business Details -->
+        <div class="card" style="padding: 32px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom: 20px; color: #f8fafc; border-bottom: 1px solid #334155; padding-bottom: 10px;">
+                <i class="fa-solid fa-building" style="color: #3b82f6;"></i> Business Details
+            </h3>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label style="color: #94a3b8; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: block;">GST Number (Optional)</label>
+                <input type="text" name="gst_number" value="{{ profile.gst_number or '' }}" placeholder="22AAAAA0000A1Z5" style="width: 100%; padding: 14px 16px; border-radius: 10px; font-size: 0.95rem; border: 1px solid #334155; background: #0f172a; color: #f8fafc; text-transform: uppercase;">
+            </div>
+        </div>
+
+        <!-- Bank Details -->
+        <div class="card" style="padding: 32px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom: 20px; color: #f8fafc; border-bottom: 1px solid #334155; padding-bottom: 10px;">
+                <i class="fa-solid fa-building-columns" style="color: #3b82f6;"></i> Bank Details
+            </h3>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label style="color: #94a3b8; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: block;">Bank Account Number <span style="color: #ef4444;">*</span></label>
+                <input type="text" name="bank_account" value="{{ profile.bank_account or '' }}" placeholder="0000111122223333" required style="width: 100%; padding: 14px 16px; border-radius: 10px; font-size: 0.95rem; border: 1px solid #334155; background: #0f172a; color: #f8fafc;">
+            </div>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label style="color: #94a3b8; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: block;">IFSC Code <span style="color: #ef4444;">*</span></label>
+                <input type="text" name="ifsc_code" value="{{ profile.ifsc_code or '' }}" placeholder="HDFC0001234" required style="width: 100%; padding: 14px 16px; border-radius: 10px; font-size: 0.95rem; border: 1px solid #334155; background: #0f172a; color: #f8fafc; text-transform: uppercase;">
+            </div>
+        </div>
+
+        <!-- Address Details -->
+        <div class="card" style="padding: 32px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom: 20px; color: #f8fafc; border-bottom: 1px solid #334155; padding-bottom: 10px;">
+                <i class="fa-solid fa-location-dot" style="color: #3b82f6;"></i> Business Address
+            </h3>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label style="color: #94a3b8; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: block;">Full Address <span style="color: #ef4444;">*</span></label>
+                <textarea name="address" rows="4" placeholder="123 Commerce St, Business District, City, State, ZIP" required style="width: 100%; padding: 14px 16px; border-radius: 10px; font-size: 0.95rem; border: 1px solid #334155; background: #0f172a; color: #f8fafc; resize: vertical;">{{ profile.address or '' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Verification Documents -->
+        <div class="card" style="padding: 32px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom: 20px; color: #f8fafc; border-bottom: 1px solid #334155; padding-bottom: 10px;">
+                <i class="fa-solid fa-file-shield" style="color: #3b82f6;"></i> Verification Documents
+            </h3>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; color: #f8fafc; font-size: 0.95rem; background: #0f172a; padding: 16px; border-radius: 10px; border: 1px solid #334155;">
+                    <input type="checkbox" name="documents_submitted" {% if profile.documents_submitted %}checked{% endif %} style="width: 20px; height: 20px; accent-color: #3b82f6;">
+                    I have physically submitted my business registration documents and cancelled cheque to the Admin.
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: right; margin-top: 16px;">
+        <button type="submit" class="btn btn-primary" style="padding: 16px 40px; font-size: 1.1rem; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-floppy-disk"></i> Save Changes
+        </button>
+    </div>
+</form>
+
+<style>
+    .account-dashboard input:focus, .account-dashboard textarea:focus {
+        outline: none;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+</style>
+{% endblock %}

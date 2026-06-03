@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}ShopEase – Multi Vendor Marketplace{% endblock %}
+{% block content %}
+<div class="text-center mt-2 mb-2">
+    <h1>ShopEase – Multi Vendor Marketplace</h1>
+    <p style="font-size: 1.2rem; color: #6b7280; margin-top: 10px;">Buy and sell products seamlessly</p>
+</div>
+
+<div style="display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; margin-top: 40px;">
+    <!-- Customer Card -->
+    <div class="card" style="flex: 1; min-width: 300px; max-width: 400px; text-align: center;">
+        <h2>CUSTOMER</h2>
+        <ul style="list-style: none; padding: 0; margin: 20px 0; color: #4b5563;">
+            <li class="mb-1">✓ Browse products</li>
+            <li class="mb-1">✓ Add to cart</li>
+            <li class="mb-1">✓ Place orders</li>
+        </ul>
+        <a href="{{ url_for('auth.login', role='customer') }}" class="btn btn-primary btn-block">Login as Customer</a>
+    </div>
+
+    <!-- Supplier Card -->
+    <div class="card" style="flex: 1; min-width: 300px; max-width: 400px; text-align: center;">
+        <h2>SUPPLIER</h2>
+        <ul style="list-style: none; padding: 0; margin: 20px 0; color: #4b5563;">
+            <li class="mb-1">✓ Add products</li>
+            <li class="mb-1">✓ Manage orders</li>
+            <li class="mb-1">✓ Track shipments</li>
+        </ul>
+        <a href="{{ url_for('auth.login', role='supplier') }}" class="btn btn-success btn-block">Login as Supplier</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Supplier Dashboard – ShopEase{% endblock %}
+{% block content %}
+<h2 class="mb-2">Supplier Dashboard</h2>
+
+<div style="display:flex; gap:16px; margin-bottom:24px;">
+    <a href="{{ url_for('supplier.add_product') }}" class="btn btn-primary" style="padding: 12px 24px; border-radius: 10px; font-weight: 600;"><i class="fa-solid fa-plus"></i> Add Product</a>
+    <a href="{{ url_for('supplier.orders') }}" class="btn btn-secondary" style="padding: 12px 24px; border-radius: 10px; font-weight: 600;"><i class="fa-solid fa-list"></i> View Orders</a>
+    <a href="{{ url_for('supplier.dashboard') }}" class="btn btn-secondary" style="padding: 12px 24px; border-radius: 10px; font-weight: 600;"><i class="fa-solid fa-chart-line"></i> Analytics</a>
+</div>
+
+<div class="stats-row">
+    <div class="stat-card" style="position: relative; overflow: hidden; display: flex; align-items: center; text-align: left; gap: 16px;">
+        <div style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+            <i class="fa-solid fa-box"></i>
+        </div>
+        <div>
+            <div class="number" style="font-size: 1.8rem; margin-bottom: 2px; color: #f8fafc; font-weight: 700;">{{ stats.total_products }}</div>
+            <div class="label" style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">Total Products</div>
+        </div>
+    </div>
+    <div class="stat-card" style="position: relative; overflow: hidden; display: flex; align-items: center; text-align: left; gap: 16px;">
+        <div style="background: rgba(16, 185, 129, 0.1); color: #10b981; width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+            <i class="fa-solid fa-check-circle"></i>
+        </div>
+        <div>
+            <div class="number" style="font-size: 1.8rem; margin-bottom: 2px; color: #f8fafc; font-weight: 700;">{{ stats.active_products }}</div>
+            <div class="label" style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">Active Products</div>
+        </div>
+    </div>
+    <div class="stat-card" style="position: relative; overflow: hidden; display: flex; align-items: center; text-align: left; gap: 16px;">
+        <div style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6; width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </div>
+        <div>
+            <div class="number" style="font-size: 1.8rem; margin-bottom: 2px; color: #f8fafc; font-weight: 700;">{{ stats.total_orders }}</div>
+            <div class="label" style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">Total Orders</div>
+        </div>
+    </div>
+    <div class="stat-card" style="position: relative; overflow: hidden; display: flex; align-items: center; text-align: left; gap: 16px;">
+        <div style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+            <i class="fa-solid fa-clock"></i>
+        </div>
+        <div>
+            <div class="number" style="font-size: 1.8rem; margin-bottom: 2px; color: #f8fafc; font-weight: 700;">{{ stats.pending_orders }}</div>
+            <div class="label" style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">Pending Orders</div>
+        </div>
+    </div>
+    <div class="stat-card" style="position: relative; overflow: hidden; display: flex; align-items: center; text-align: left; gap: 16px;">
+        <div style="background: rgba(236, 72, 153, 0.1); color: #ec4899; width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+            <i class="fa-solid fa-indian-rupee-sign"></i>
+        </div>
+        <div>
+            <div class="number" style="font-size: 1.8rem; margin-bottom: 2px; color: #f8fafc; font-weight: 700;">₹{{ "%.2f"|format(stats.total_revenue) }}</div>
+            <div class="label" style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">Total Revenue</div>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 32px;">
+    <div class="card" style="padding: 24px; border-radius: 16px;">
+        <h3 class="mb-3" style="display: flex; align-items: center; gap: 8px; font-size: 1.2rem;"><i class="fa-solid fa-chart-pie" style="color: #64748b;"></i> Order Status Distribution</h3>
+        <div style="position: relative; height: 250px; width: 100%;">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+    <div class="card" style="padding: 24px; border-radius: 16px;">
+        <h3 class="mb-3" style="display: flex; align-items: center; gap: 8px; font-size: 1.2rem;"><i class="fa-solid fa-chart-simple" style="color: #64748b;"></i> Top Products by Revenue</h3>
+        <div style="position: relative; height: 250px; width: 100%;">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const chartData = {{ chart_data | tojson | safe }};
+    
+    const ctxStatus = document.getElementById('statusChart').getContext('2d');
+    new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+            labels: chartData.status_labels.map(l => l.charAt(0).toUpperCase() + l.slice(1)),
+            datasets: [{
+                data: chartData.status_data,
+                backgroundColor: ['#fef08a', '#bfdbfe', '#e9d5ff', '#c7d2fe', '#bbf7d0', '#fecaca']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctxRevenue, {
+        type: 'bar',
+        data: {
+            labels: chartData.product_labels,
+            datasets: [{
+                label: 'Revenue (₹)',
+                data: chartData.product_revenue,
+                backgroundColor: '#f97316',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+</script>
+{% endblock %}

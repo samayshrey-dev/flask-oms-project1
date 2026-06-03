@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Checkout – ShopEase{% endblock %}
+{% block content %}
+<h2 class="mb-2">Checkout</h2>
+
+<div style="display:flex; gap:24px; flex-wrap:wrap;">
+    <!-- Order Summary -->
+    <div class="card" style="flex:1; min-width:300px;">
+        <h3>Order Summary</h3>
+        <div class=\"table-container\">
+<table>
+            <thead>
+                <tr><th>Product</th><th>Qty</th><th>Subtotal</th></tr>
+            </thead>
+            <tbody>
+                {% for item in cart.items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ "%.2f"|format(item.subtotal) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2" class="text-right"><strong>Total:</strong></td>
+                    <td><strong>₹{{ "%.2f"|format(cart.total_price) }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+</div>
+    </div>
+
+    <!-- Shipping Address -->
+    <div class="card" style="flex:1; min-width:300px;">
+        <h3>Shipping Address</h3>
+        <form method="POST">
+            <div class="form-group">
+                <label for="shipping_address">Full Address</label>
+                <textarea id="shipping_address" name="shipping_address" required
+                          placeholder="House No, Street, City, State, PIN Code"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Place Order</button>
+        </form>
+    </div>
+</div>
+
+<a href="{{ url_for('customer.cart') }}" class="mt-2" style="display:inline-block;">← Back to Cart</a>
+{% endblock %}

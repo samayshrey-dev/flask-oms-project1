@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order.id }} – Supplier – ShopEase{% endblock %}
+{% block content %}
+<h2 class="mb-2">Order #{{ order.id }}</h2>
+
+<div style="display:flex; gap:24px; flex-wrap:wrap;">
+    <div class="card" style="flex:2; min-width:300px;">
+        <div class="flex-between mb-1">
+            <h3>Order Info</h3>
+            <span class="status status-{{ order.status }}">{{ order.status }}</span>
+        </div>
+        <p><strong>Customer:</strong> {{ order.customer.name }} ({{ order.customer.email }})</p>
+        <p><strong>Date:</strong> {{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+        <p><strong>Shipping Address:</strong> {{ order.shipping_address }}</p>
+        <p><strong>Order Total:</strong> ₹{{ "%.2f"|format(order.total_amount) }}</p>
+
+        <h3 class="mt-2">Your Items in This Order</h3>
+        <div class=\"table-container\">
+<table>
+            <thead>
+                <tr><th>Product</th><th>Price</th><th>Qty</th><th>Subtotal</th></tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>₹{{ "%.2f"|format(item.unit_price) }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ "%.2f"|format(item.subtotal) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+</div>
+    </div>
+
+    <div class="card" style="flex:1; min-width:250px;">
+        <h3>Update Status</h3>
+        {% set next_statuses = {
+            'pending': 'confirmed',
+            'confirmed': 'packed',
+            'packed': 'shipped',
+            'shipped': 'delivered'
+        } %}
+
+        {% if order.status in next_statuses %}
+            <p>Current: <strong>{{ order.status|capitalize }}</strong></p>
+            <p>Next step: <strong>{{ next_statuses[order.status]|capitalize }}</strong></p>
+            <form method="POST" action="{{ url_for('supplier.update_status', order_id=order.id) }}" class="mt-1">
+                <input type="hidden" name="status" value="{{ next_statuses[order.status] }}">
+                <button type="submit" class="btn btn-primary btn-block">
+                    Mark as {{ next_statuses[order.status]|capitalize }}
+                </button>
+            </form>
+        {% elif order.status == 'delivered' %}
+            <p style="color:#16a34a; font-weight:600;">✅ Order delivered successfully.</p>
+        {% elif order.status == 'cancelled' %}
+            <p style="color:#dc2626; font-weight:600;">❌ Order was cancelled.</p>
+        {% endif %}
+
+        {% if order.status not in ('shipped', 'delivered', 'cancelled') %}
+            <form method="POST" action="{{ url_for('supplier.update_status', order_id=order.id) }}" class="mt-2">
+                <input type="hidden" name="status" value="cancelled">
+                <button type="submit" class="btn btn-danger btn-block btn-sm"
+                        onclick="return confirm('Cancel this order?')">Cancel Order</button>
+            </form>
+        {% endif %}
+
+        <h3 class="mt-2">Order Progress</h3>
+        <ul style="list-style:none; padding:0; margin-top:8px;">
+            {% set stages = ['pending', 'confirmed', 'packed', 'shipped', 'delivered'] %}
+            {% if order.status == 'cancelled' %}
+                <li style="padding:4px 0; font-weight:700; color:#dc2626;">❌ Cancelled</li>
+            {% else %}
+                {% for stage in stages %}
+                    <li style="padding:4px 0; {% if stage == order.status %}font-weight:700; color:#2563eb;{% elif stages.index(stage) < stages.index(order.status) %}color:#16a34a;{% else %}color:#d1d5db;{% endif %}">
+                        {% if stages.index(stage) < stages.index(order.status) %}✅
+                        {% elif stage == order.status %}📍
+                        {% else %}⬜{% endif %}
+                        {{ stage|capitalize }}
+                    </li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </div>
+</div>
+
+<a href="{{ url_for('supplier.orders') }}" class="mt-2" style="display:inline-block;">← Back to Orders</a>
+{% endblock %}

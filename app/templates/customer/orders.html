@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}My Orders – ShopEase{% endblock %}
+{% block content %}
+<div class="flex-between mb-2">
+    <h2>My Orders</h2>
+    <form method="GET" action="{{ url_for('customer.orders') }}" class="form-inline">
+        <select name="status" onchange="this.form.submit()" style="padding: 8px; border-radius: 6px; background: #1e293b; color: #f8fafc; border: 1px solid #334155;">
+            <option value="">All Statuses</option>
+            <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="confirmed" {% if current_status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+            <option value="shipped" {% if current_status == 'shipped' %}selected{% endif %}>Shipped</option>
+            <option value="delivered" {% if current_status == 'delivered' %}selected{% endif %}>Delivered</option>
+            <option value="cancelled" {% if current_status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+        </select>
+    </form>
+</div>
+
+{% if orders %}
+<div class=\"table-container\">
+<table>
+    <thead>
+        <tr>
+            <th>Order #</th>
+            <th>Date</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+            <td>{{ order.items|length }} item(s)</td>
+            <td>₹{{ "%.2f"|format(order.total_amount) }}</td>
+            <td>
+                <span class="status status-{{ order.status }}">
+                    <i class="fa-solid {% if order.status == 'pending' %}fa-clock{% elif order.status == 'confirmed' %}fa-check{% elif order.status == 'packed' %}fa-box{% elif order.status == 'shipped' %}fa-truck-fast{% elif order.status == 'delivered' %}fa-house-circle-check{% elif order.status == 'cancelled' %}fa-xmark{% else %}fa-circle-info{% endif %}" style="margin-right: 6px;"></i>
+                    {{ order.status }}
+                </span>
+            </td>
+            <td>
+                <a href="{{ url_for('customer.order_detail', order_id=order.id) }}" class="btn btn-primary btn-sm">View</a>
+                {% if order.status == 'pending' %}
+                    <a href="{{ url_for('customer.payment', order_id=order.id) }}" class="btn btn-success btn-sm">Pay</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="empty-state">
+    <span class="empty-icon">📦</span>
+    <h3>No orders yet</h3>
+    <p>Your order history will appear here once you make your first purchase.<br><a href="{{ url_for('customer.home') }}">Start shopping</a></p>
+</div>
+{% endif %}
+{% endblock %}

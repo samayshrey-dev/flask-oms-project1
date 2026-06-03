@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Shopping Cart – ShopEase{% endblock %}
+{% block content %}
+<h2 class="mb-2">Shopping Cart</h2>
+
+{% if cart and cart.items %}
+<div class=\"table-container\">
+<table>
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart.items %}
+        <tr>
+            <td>
+                <a href="{{ url_for('customer.product_detail', product_id=item.product.id) }}">
+                    {{ item.product.name }}
+                </a>
+            </td>
+            <td>₹{{ "%.2f"|format(item.product.price) }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('customer.update_cart', item_id=item.id) }}" class="form-inline">
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" style="width:60px;">
+                    <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+                </form>
+            </td>
+            <td>₹{{ "%.2f"|format(item.subtotal) }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('customer.remove_from_cart', item_id=item.id) }}">
+                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3" class="text-right"><strong>Total:</strong></td>
+            <td><strong>₹{{ "%.2f"|format(cart.total_price) }}</strong></td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+</div>
+
+<div class="text-right">
+    <a href="{{ url_for('customer.products') }}" class="btn btn-secondary">Continue Shopping</a>
+    <a href="{{ url_for('customer.checkout') }}" class="btn btn-primary">Proceed to Checkout</a>
+</div>
+
+{% else %}
+<div class="empty-state">
+    <span class="empty-icon">🛒</span>
+    <h3>Your cart is empty</h3>
+    <p>Looks like you haven't added anything yet.<br><a href="{{ url_for('customer.home') }}">Browse products</a> and find something you love.</p>
+</div>
+{% endif %}
+{% endblock %}

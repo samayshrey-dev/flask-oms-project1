@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login – OMS</title>
+    <style>
+        /* Custom styles for the split login page */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0f172a; /* Dark right side background */
+            color: white;
+        }
+
+        .login-split {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* LEFT SIDE */
+        .login-left {
+            flex: 1.2;
+            background: linear-gradient(145deg, #1e1b4b, #312e81, #1e3a8a);
+            position: relative;
+            overflow: hidden;
+            padding: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Abstract circles */
+        .login-left::before, .login-left::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .login-left::before {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+        }
+        .login-left::after {
+            width: 250px;
+            height: 250px;
+            bottom: 50px;
+            left: 50px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .brand-logo {
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+        }
+        .brand-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: -webkit-linear-gradient(#93c5fd, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 8px 0;
+        }
+        .brand-subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 60px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 32px;
+            gap: 16px;
+        }
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #60a5fa;
+        }
+        .feature-text h4 {
+            margin: 0 0 4px 0;
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+        .feature-text p {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .stats-section {
+            margin-top: auto;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .stats-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .stats-grid {
+            display: flex;
+            gap: 40px;
+        }
+        .stat-box h3 {
+            margin: 0 0 4px 0;
+            font-size: 1.8rem;
+            color: #60a5fa;
+            font-weight: 700;
+        }
+        .stat-box p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        /* RIGHT SIDE */
+        .login-right {
+            flex: 1;
+            background-color: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .login-card h2 {
+            margin: 0 0 8px 0;
+            font-size: 1.8rem;
+            color: #f8fafc;
+            font-weight: 700;
+        }
+        .login-card > p {
+            color: #94a3b8;
+            margin: 0 0 32px 0;
+            font-size: 0.95rem;
+        }
+
+        .dark-form-group {
+            margin-bottom: 20px;
+        }
+        .dark-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+        .dark-form-group input {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .dark-form-group input:focus {
+            border-color: #3b82f6;
+        }
+
+        .btn-signin {
+            width: 100%;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 10px;
+        }
+        .btn-signin:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 24px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        .signup-link a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Flash messages for the dark theme */
+        .dark-flash {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+        }
+        .dark-flash.error {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            color: #ef4444;
+        }
+        .dark-flash.success {
+            background: rgba(22, 163, 74, 0.1);
+            border: 1px solid rgba(22, 163, 74, 0.2);
+            color: #4ade80;
+        }
+
+        @media (max-width: 900px) {
+            .login-left {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-split">
+    <!-- LEFT SIDE -->
+    <div class="login-left">
+        <div class="brand-logo">⚡</div>
+        <h1 class="brand-title">OMS</h1>
+        <p class="brand-subtitle">Order Management System</p>
+
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            </div>
+            <div class="feature-text">
+                <h4>Real-time Analytics</h4>
+                <p>Track orders, revenue & shipments live</p>
+            </div>
+        </div>
+        
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="feature-text">
+                <h4>Customer Management</h4>
+                <p>Organize your customers effortlessly</p>
+            </div>
+        </div>
+
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            </div>
+            <div class="feature-text">
+                <h4>Shipment Tracking</h4>
+                <p>End-to-end delivery visibility</p>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stats-title">Trusted by teams worldwide</div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <h3>10K+</h3>
+                    <p>Orders Managed</p>
+                </div>
+                <div class="stat-box">
+                    <h3>500+</h3>
+                    <p>Active Users</p>
+                </div>
+                <div class="stat-box">
+                    <h3>99.9%</h3>
+                    <p>Uptime</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="login-right">
+        <div class="login-card">
+            <h2>Welcome Back</h2>
+            <p>Sign in to your account to continue</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="dark-flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <div class="dark-form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="you@example.com">
+                </div>
+                <div class="dark-form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-signin">Sign In</button>
+            </form>
+            
+            <div class="signup-link">
+                Don't have an account? <a href="{{ url_for('auth.register') }}">Sign up</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

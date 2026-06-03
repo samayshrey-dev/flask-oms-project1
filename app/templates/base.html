@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}OMS Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="{% if request.endpoint in ['auth.login', 'auth.register'] %}auth-page{% else %}app-layout{% endif %}">
+    {% if not request.endpoint in ['auth.login', 'auth.register'] %}
+        <div class="app-wrapper">
+            <!-- Fixed Left Sidebar -->
+            <aside class="app-sidebar">
+                <div class="sidebar-brand">
+                    <i class="fa-solid fa-bolt" style="color: #3b82f6;"></i> ShopEase
+                </div>
+                
+                <div class="sidebar-nav-groups">
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_supplier %}
+                        <div class="nav-group">
+                            <div class="nav-group-title">OVERVIEW</div>
+                            <a href="{{ url_for('supplier.dashboard') }}" class="sidebar-link {% if request.endpoint == 'supplier.dashboard' %}active{% endif %}">
+                                <i class="fa-solid fa-table-columns"></i> Dashboard
+                            </a>
+                        </div>
+                        <div class="nav-group">
+                            <div class="nav-group-title">DATA</div>
+                            <a href="{{ url_for('supplier.products') }}" class="sidebar-link {% if request.endpoint == 'supplier.products' %}active{% endif %}">
+                                <i class="fa-solid fa-box-open"></i> Products
+                            </a>
+                            <a href="{{ url_for('supplier.orders') }}" class="sidebar-link {% if request.endpoint == 'supplier.orders' %}active{% endif %}">
+                                <i class="fa-solid fa-file-invoice"></i> Orders
+                            </a>
+                        </div>
+                        {% elif current_user.is_customer %}
+                        <div class="nav-group">
+                            <div class="nav-group-title">OVERVIEW</div>
+                            <a href="{{ url_for('customer.home') }}" class="sidebar-link {% if request.endpoint == 'customer.home' %}active{% endif %}">
+                                <i class="fa-solid fa-house"></i> Home
+                            </a>
+                        </div>
+                        <div class="nav-group">
+                            <div class="nav-group-title">DATA</div>
+
+                            <a href="{{ url_for('customer.cart') }}" class="sidebar-link {% if request.endpoint == 'customer.cart' %}active{% endif %}">
+                                <i class="fa-solid fa-cart-shopping"></i> Cart
+                                {% if current_user.cart and current_user.cart.item_count > 0 %}
+                                    <span class="badge">{{ current_user.cart.item_count }}</span>
+                                {% endif %}
+                            </a>
+                            <a href="{{ url_for('customer.orders') }}" class="sidebar-link {% if request.endpoint == 'customer.orders' %}active{% endif %}">
+                                <i class="fa-solid fa-list-check"></i> My Orders
+                            </a>
+                        </div>
+                        
+                        {% if categories %}
+                        <div class="nav-group">
+                            <div class="nav-group-title">CATEGORIES</div>
+                            {% for cat in categories %}
+                            <a href="{{ url_for('customer.products', category=cat) }}" class="sidebar-link {% if request.args.get('category') == cat %}active{% endif %}">
+                                <i class="fa-solid fa-tag"></i> {{ cat }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <div class="sidebar-account">
+                    <div class="account-info">
+                        {% if current_user.is_authenticated and current_user.is_customer %}
+                        <a href="{{ url_for('customer.account') }}" style="display: flex; flex-direction: column; text-decoration: none;">
+                            <strong>{{ current_user.name }}</strong>
+                            <span>Customer</span>
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('supplier.account') }}" style="display: flex; flex-direction: column; text-decoration: none;">
+                            <strong>{{ current_user.name }}</strong>
+                            <span>Supplier / Seller</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.logout') }}" class="btn-signout">Sign Out</a>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn-signout">Sign In</a>
+                    {% endif %}
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="app-main">
+                <header class="app-header">
+                    <h2>
+                        {% if request.endpoint == 'supplier.dashboard' %}Dashboard
+                        {% elif request.endpoint == 'supplier.products' %}My Products
+                        {% elif request.endpoint == 'supplier.orders' %}Orders
+                        {% elif request.endpoint == 'customer.home' %}Welcome to ShopEase
+                        {% elif request.endpoint == 'customer.account' %}My Account
+                        {% elif request.endpoint == 'customer.products' %}Products
+                        {% elif request.endpoint == 'customer.cart' %}Your Cart
+                        {% elif request.endpoint == 'customer.orders' %}Order History
+                        {% else %}Overview{% endif %}
+                    </h2>
+                </header>
+
+                <div class="app-content-area">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="dark-flash {{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    {% block content %}{% endblock %}
+                </div>
+            </main>
+        </div>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Home – ShopEase{% endblock %}
+{% block content %}
+
+<!-- PRODUCTS SECTION -->
+{% if products %}
+<h2 class="section-title mt-3">Explore Products</h2>
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card" id="card-{{ product.id }}">
+        <a href="{{ url_for('customer.product_detail', product_id=product.id) }}" style="display: flex; flex-direction: column; flex-grow: 1; text-decoration: none; color: inherit;">
+            <div class="product-image-container">
+                <img src="{{ product.image_url or 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8' }}" alt="{{ product.name }}">
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                {% if product.category %}
+                    <span class="category">{{ product.category }}</span>
+                {% endif %}
+                <p class="price">₹{{ "%.2f"|format(product.price) }}</p>
+            </div>
+        </a>
+        <div class="actions">
+            {% if product.stock > 0 %}
+            <div class="qty-row">
+                <label>Qty:</label>
+                <div class="qty-control">
+                    <button type="button" class="qty-btn" onclick="changeQty(this, -1)">−</button>
+                    <input type="number" class="qty-input" id="qty-{{ product.id }}" value="1" min="1" max="99">
+                    <button type="button" class="qty-btn" onclick="changeQty(this, 1)">+</button>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-block add-to-cart-btn"
+                    data-product-id="{{ product.id }}"
+                    data-url="{{ url_for('customer.api_add_to_cart', product_id=product.id) }}">
+                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+            </button>
+            {% else %}
+            <button class="btn btn-secondary btn-block" disabled>Out of Stock</button>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Toast notification -->
+<div id="cart-toast" class="cart-toast"></div>
+
+<script>
+function changeQty(btn, delta) {
+    const input = btn.parentElement.querySelector('.qty-input');
+    let val = parseInt(input.value) || 1;
+    val = Math.max(1, val + delta);
+    input.value = val;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = this.dataset.url;
+            const productId = this.dataset.productId;
+            const qtyInput = document.getElementById('qty-' + productId);
+            const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+            const button = this;
+            const origText = button.textContent;
+
+            button.textContent = 'Adding...';
+            button.disabled = true;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({quantity: qty})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const badge = document.querySelector('.sidebar-link .badge');
+                    if (badge) {
+                        badge.textContent = data.cart_count;
+                    } else {
+                        const cartLink = document.querySelector('a[href*="/cart"]');
+                        if (cartLink) {
+                            const newBadge = document.createElement('span');
+                            newBadge.className = 'badge';
+                            newBadge.textContent = data.cart_count;
+                            cartLink.appendChild(newBadge);
+                        }
+                    }
+                    showToast('✓ Added ' + qty + ' to cart!', 'success');
+                    button.textContent = '✓ Added';
+                    setTimeout(() => { button.textContent = origText; button.disabled = false; }, 1500);
+                } else {
+                    showToast(data.error || 'Failed to add', 'error');
+                    button.textContent = origText;
+                    button.disabled = false;
+                }
+            })
+            .catch(() => {
+                showToast('Network error', 'error');
+                button.textContent = origText;
+                button.disabled = false;
+            });
+        });
+    });
+});
+
+function showToast(msg, type) {
+    const toast = document.getElementById('cart-toast');
+    toast.textContent = msg;
+    toast.className = 'cart-toast show ' + type;
+    setTimeout(() => { toast.className = 'cart-toast'; }, 2500);
+}
+</script>
+
+{% endblock %}
